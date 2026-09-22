@@ -1,0 +1,55 @@
+---
+import '../styles/global.css';
+import '../styles/additions.css';
+const { title = 'Bouw- en timmerwerk vanuit De Meern | Heikoop Bouw', description = 'Van een dakkapel tot een veranda of verbouwing. Ontdek het werk van Patrick Heikoop en bespreek uw bouwplannen.' } = Astro.props;
+const path = Astro.url.pathname;
+const canonical = new URL(path, Astro.site);
+const business = { '@context': 'https://schema.org', '@type': 'GeneralContractor', name: 'Heikoop Bouw', url: Astro.site?.href, logo: new URL('/assets/logo.jpg', Astro.site).href, email: 'info@heikoopbouw.nl', foundingDate: '2017', address: { '@type': 'PostalAddress', streetAddress: 'De Milan Viscontilaan 169', postalCode: '3453 SP', addressLocality: 'De Meern', addressCountry: 'NL' }, contactPoint: { '@type': 'ContactPoint', telephone: '+31-6-22701596', contactType: 'WhatsApp of sms' } };
+const navigation = [['Diensten', '/diensten/'], ['Projecten', '/projecten/'], ['Over Heikoop', '/over-heikoop/']];
+---
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#d2121f" />
+    <title>{title}</title>
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content="nl_NL" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <link rel="preload" href="/assets/font-1.ttf" as="font" type="font/ttf" crossorigin />
+    <link rel="preload" href="/assets/font-3.ttf" as="font" type="font/ttf" crossorigin />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script type="application/ld+json" set:html={JSON.stringify(business)} />
+  </head>
+  <body class:list={{ 'has-mobile-contact': !path.startsWith('/contact') }}>
+    <a class="skip-link" href="#inhoud">Direct naar inhoud</a>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="/" aria-label="Heikoop Bouw — naar de homepage"><img src="/assets/logo.jpg" width="200" height="72" alt="Heikoop Bouw" /></a>
+        <nav class="desktop-nav" aria-label="Hoofdnavigatie">{navigation.map(([label, href]) => <a href={href} aria-current={path.startsWith(href) ? 'page' : undefined}>{label}</a>)}</nav>
+        <a class="button header-cta" href="/contact/">Bespreek uw plannen <span aria-hidden="true">↗</span></a>
+        <button class="menu-toggle" aria-controls="mobile-menu" aria-expanded="false"><span>Menu</span><span class="menu-lines" aria-hidden="true"></span></button>
+      </div>
+      <nav id="mobile-menu" class="mobile-menu" aria-label="Mobiele navigatie" hidden>{navigation.map(([label, href]) => <a href={href}>{label}</a>)}<a href="/contact/">Bespreek uw plannen ↗</a></nav>
+    </header>
+    <main id="inhoud"><slot /></main>
+    <footer class="site-footer">
+      <div class="container footer-grid"><a href="/" class="footer-logo" aria-label="Heikoop Bouw homepage"><img src="/assets/logo-white.png" width="200" height="72" alt="Heikoop Bouw" /></a><div><h2>Bouwen begint met contact.</h2><a href="mailto:info@heikoopbouw.nl">info@heikoopbouw.nl ↗</a><a href="https://wa.me/31622701596" target="_blank" rel="noopener noreferrer">06 2270 1596 <small>WhatsApp of sms</small></a></div><div><h3>Heikoop Bouw</h3><p>De Milan Viscontilaan 169<br/>3453 SP De Meern</p><p>KvK 68263678</p></div><div><h3>Ontdek</h3>{navigation.map(([label, href]) => <a href={href}>{label}</a>)}<a href="/contact/">Contact</a></div></div>
+      <div class="container footer-bottom"><span>© {new Date().getFullYear()} Heikoop Bouw</span><a href="/#vragen">Veelgestelde vragen</a><a href="/privacy/">Privacy & website</a></div>
+    </footer>
+    {!path.startsWith('/contact') && <nav class="mobile-contact-bar" aria-label="Direct contact"><a class="mobile-whatsapp" href="https://wa.me/31622701596" target="_blank" rel="noopener noreferrer">WhatsApp <span aria-hidden="true">↗</span></a><a class="button" href="/contact/">Bespreek uw plannen <span aria-hidden="true">↗</span></a></nav>}
+    <script>
+      const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
+      const menu = document.querySelector<HTMLElement>('#mobile-menu');
+      const setMenu = (open: boolean) => { toggle?.setAttribute('aria-expanded', String(open)); if(menu) menu.hidden = !open; document.body.classList.toggle('menu-open', open); };
+      toggle?.addEventListener('click', () => setMenu(toggle.getAttribute('aria-expanded') !== 'true'));
+      document.addEventListener('keydown', e => { if(e.key === 'Escape' && !document.querySelector('dialog[open]') && menu && !menu.hidden) { setMenu(false); toggle?.focus(); } });
+      window.matchMedia('(min-width: 761px)').addEventListener('change', event => { if(event.matches) setMenu(false); });
+    </script>
+  </body>
+</html>

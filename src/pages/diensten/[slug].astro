@@ -1,0 +1,17 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import ContactBand from '../../components/ContactBand.astro';
+import { services, projects } from '../../data/content';
+export function getStaticPaths() { return services.map(service => ({ params:{slug:service.slug}, props:{service} })); }
+const { service } = Astro.props;
+const related = projects.filter(p=>p.category===service.category).slice(0,3);
+---
+<Layout title={`${service.title} | Heikoop Bouw`} description={service.intro}>
+  <div class="container breadcrumb"><a href="/diensten/">Diensten</a><span aria-hidden="true">/</span><span>{service.title}</span></div>
+  <section class="container detail-hero"><div><p class="eyebrow">{service.short}</p><h1>{service.title}</h1><p>{service.intro}</p><a class="button" href={`/contact/?dienst=${service.slug}`}>Bespreek uw plannen <span aria-hidden="true">↗</span></a></div><img src={`/assets/${service.image}`} alt={service.alt} width="960" height="720" fetchpriority="high"/></section>
+  <section class="section soft"><div class="container content-columns"><div><p class="eyebrow">DE MOGELIJKHEDEN</p><h2>Van grote lijnen<br/>tot kleine details.</h2><ul class="check-list">{service.items.map(item=><li>{item}</li>)}</ul></div><div class="prose"><h3>Een goed vertrekpunt</h3><p>{service.consider}</p><h3>Wat bepaalt de kosten?</h3><p>{service.cost}</p><p class="note">Elk project is anders. Werkzaamheden, materiaalkeuzes en planning worden voor uw situatie besproken.</p></div></div></section>
+  <section class="section container"><div class="section-heading"><div><p class="eyebrow">VAN PLAN NAAR PRAKTIJK</p><h2>Bekijk het uitgevoerde werk.</h2></div><a class="text-link" href="/projecten/">Alle projecten <span aria-hidden="true">↗</span></a></div><div class="project-grid">{related.map(project=><ProjectCard project={project}/>)}</div></section>
+  <section class="section container faq-section"><div><p class="eyebrow">HANDIG OM TE WETEN</p><h2>Uw vragen,<br/>een helder begin.</h2></div><div class="faq-list">{service.faq.map(([question,answer])=><details><summary>{question}<span aria-hidden="true">+</span></summary><p>{answer}</p></details>)}</div></section>
+  <ContactBand/>
+</Layout>

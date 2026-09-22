@@ -1,0 +1,20 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import ContactBand from '../components/ContactBand.astro';
+import CommonQuestions from '../components/CommonQuestions.astro';
+import { projects } from '../data/content';
+---
+<Layout>
+  <section class="hero">
+    <div class="hero-copy"><p class="eyebrow light"><span></span> HEIKOOP BOUW · DE MEERN</p><h1>Goed gebouwd.<br/><span>Fijn geleefd.</span></h1><p class="hero-intro">Meer ruimte. Een plek buiten. Een huis dat bij u past. Bouw- en timmerwerk met aandacht voor uw wensen én de afwerking.</p><div class="hero-actions"><a class="button" href="/contact/">Bespreek uw bouwplannen <span aria-hidden="true">↗</span></a><a class="text-link light" href="/projecten/">Bekijk ons werk <span aria-hidden="true">↗</span></a></div><div class="hero-bottom"><span>VAN IDEE TOT AFWERKING</span><span aria-hidden="true">↓</span></div></div>
+    <a class="hero-image" href="/projecten/veranda-met-zithoek/"><img src="/assets/veranda.jpeg" width="640" height="480" alt="Door Heikoop Bouw gemaakte veranda met zithoek in de tuin" fetchpriority="high"/><div class="image-caption"><span><small>GEMAAKT DOOR HEIKOOP</small>Een fijne plek buiten.</span><span class="circle-arrow" aria-hidden="true">↗</span></div></a>
+  </section>
+  <div class="trust-strip"><div class="container"><span><b>Persoonlijk</b> contact met Patrick</span><span><b>Sinds 2017</b> Heikoop Bouw</span><span><b>Van voorbereiding</b> tot afwerking</span></div></div>
+  <section class="section container"><div class="section-heading"><div><p class="eyebrow">RUIMTE VOOR UW PLANNEN</p><h2>Wat wilt u maken?</h2></div><p>Van een slimme uitbreiding tot timmerwerk op maat. Uw plannen zijn het begin.</p></div><div class="service-preview"><a href="/diensten/verbouw/">Verbouw & renovatie <span>↗</span></a><a href="/diensten/dakkapellen/">Dakkapellen <span>↗</span></a><a href="/diensten/verandas/">Veranda’s & buitenwerk <span>↗</span></a><a href="/diensten/timmerwerk/">Timmerwerk op maat <span>↗</span></a></div></section>
+  <section class="section soft"><div class="container"><div class="section-heading"><div><p class="eyebrow">EEN SELECTIE VAN ONS WERK</p><h2>Van plannen naar plekken.</h2></div><a class="text-link" href="/projecten/">Bekijk alle projecten <span aria-hidden="true">↗</span></a></div><div class="project-grid">{projects.slice(0,3).map(project=><ProjectCard project={project}/>)}</div></div></section>
+  <section class="section container home-about"><div class="home-about-image"><img src="/assets/patrick.jpg" width="800" height="595" alt="Patrick Heikoop, oprichter van Heikoop Bouw" loading="lazy"/><div class="portrait-caption"><span>Patrick Heikoop</span><small>HET GEZICHT ACHTER HET WERK</small></div></div><div class="home-about-copy"><p class="eyebrow">PERSOONLIJK BETROKKEN</p><h2>U heeft plannen.<br/>Ik heb er zin in.</h2><p>Een goed bouwproject begint met aandacht. Voor uw ideeën, voor de ruimte en voor de manier waarop alles samenkomt.</p><p>Ik ben Patrick Heikoop. Het bouwen leerde ik van mijn vader. Sinds 2017 werk ik onder mijn eigen naam aan bouw- en timmerprojecten voor particulieren en bedrijven.</p><a class="text-link" href="/over-heikoop/">Meer over Patrick <span aria-hidden="true">↗</span></a></div></section>
+  <section class="section container home-process"><div class="section-heading"><div><p class="eyebrow">EEN GOED BEGIN</p><h2>Van uw idee naar<br/>een concreet gesprek.</h2></div><p>Een schets hoeft nog niet perfect te zijn. Met deze drie dingen maakt u uw plannen duidelijk.</p></div><div class="process-grid"><article><span>01</span><h3>Vertel uw idee</h3><p>Wat wilt u laten maken of veranderen? Vertel ook in welke plaats het project is.</p></article><article><span>02</span><h3>Laat de situatie zien</h3><p>Een paar foto’s, afmetingen of een schets helpen om uw vraag te begrijpen.</p></article><article><span>03</span><h3>Bespreek de mogelijkheden</h3><p>Uw wensen vormen het vertrekpunt voor het gesprek over de uitvoering.</p></article></div></section>
+  <CommonQuestions/>
+  <ContactBand/>
+</Layout>

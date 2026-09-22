@@ -1,0 +1,18 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import ContactBand from '../../components/ContactBand.astro';
+import { projects } from '../../data/content';
+---
+<Layout title="Projecten — een selectie van ons werk | Heikoop Bouw" description="Bekijk echte projecten van Heikoop Bouw: dakkapellen, Douglas veranda’s, pergola’s en timmerwerk op maat.">
+  <div class="container page-intro"><p class="eyebrow">GEMAAKT DOOR HEIKOOP</p><h1>Het werk<br/>vertelt het verhaal.</h1><p>Een selectie van uitgevoerde projecten. Bekijk de materialen, de afwerking en de mogelijkheden voor uw eigen plannen.</p></div>
+  <section class="container project-index"><div class="filters" role="group" aria-label="Filter projecten">{[['alle','Alle projecten'],['buitenwerk','Veranda’s & buitenwerk'],['dakkapellen','Dakkapellen'],['timmerwerk','Timmerwerk']].map(([value,label])=><button data-filter={value} aria-pressed={value==='alle'}>{label}</button>)}</div><p class="project-count" role="status" aria-live="polite">6 projecten</p><div class="project-grid">{projects.map(project=><ProjectCard project={project}/>)}</div></section>
+  <ContactBand/>
+  <script>
+    const filters = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+    const cards = document.querySelectorAll<HTMLElement>('[data-category]');
+    function filterProjects(value:string){ let count=0; cards.forEach(card=>{const show=value==='alle'||card.dataset.category===value; card.hidden=!show; if(show)count++;});filters.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.filter===value))); const status=document.querySelector('.project-count'); if(status)status.textContent=`${count} ${count===1?'project':'projecten'}`; }
+    function fromUrl(){const value=new URL(location.href).searchParams.get('categorie')||'alle';filterProjects(['alle','buitenwerk','dakkapellen','timmerwerk'].includes(value)?value:'alle');}
+    filters.forEach(button=>button.addEventListener('click',()=>{const value=button.dataset.filter!; const url=new URL(location.href);value==='alle'?url.searchParams.delete('categorie'):url.searchParams.set('categorie',value);history.pushState({},'',url);filterProjects(value);})); window.addEventListener('popstate',fromUrl);fromUrl();
+  </script>
+</Layout>

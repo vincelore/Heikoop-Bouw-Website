@@ -1,0 +1,107 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { services, projects } from '../data/content';
+const projectOptions = Object.fromEntries(projects.map(project => [project.slug, { service: project.service, title: project.title }]));
+---
+<Layout title="Contact — bespreek uw bouwplannen | Heikoop Bouw" description="Bespreek uw bouwplannen met Patrick Heikoop. Bereikbaar via WhatsApp of sms op 06 2270 1596 en info@heikoopbouw.nl.">
+  <section class="container contact-page">
+    <div class="contact-copy">
+      <p class="eyebrow">WE HOREN GRAAG UW IDEE</p>
+      <h1>Mooi werk begint<br/>met een bericht.</h1>
+      <p class="lead">Vertel wat u wilt laten uitvoeren en in welke plaats. Een foto of schets helpt om uw plannen te begrijpen.</p>
+      <a class="contact-method" href="https://wa.me/31622701596" target="_blank" rel="noopener noreferrer"><span class="contact-icon" aria-hidden="true">↗</span><span><small>WHATSAPP OF SMS</small><strong>06 2270 1596</strong></span></a>
+      <a class="contact-method" href="mailto:info@heikoopbouw.nl"><span class="contact-icon" aria-hidden="true">@</span><span><small>E-MAIL</small><strong>info@heikoopbouw.nl</strong></span></a>
+      <aside class="contact-preparation"><h2>Handig om mee te sturen</h2><ul><li>Een overzichtsfoto van de ruimte of tuin</li><li>Globale afmetingen of een eerste schets</li><li>Wat u belangrijk vindt aan het resultaat</li></ul><p>U voegt foto’s straks toe in uw bericht. Een uitgewerkt bouwplan is nog niet nodig.</p></aside>
+      <div class="contact-address"><strong>Heikoop Bouw</strong><p>De Milan Viscontilaan 169<br/>3453 SP De Meern</p><p>KvK 68263678</p></div>
+    </div>
+    <div class="form-panel">
+      <h2>Uw plannen in het kort.</h2>
+      <p>Maak hier uw bericht klaar. Daarna opent u WhatsApp of uw e-mailprogramma en verstuurt u het zelf.</p>
+      <form id="contact-form" novalidate data-projects={JSON.stringify(projectOptions)}>
+        <fieldset class="project-choice"><legend>Waar denkt u aan?</legend><div class="project-choice-options">{services.map(service => <label><input type="radio" name="soort" value={service.slug}/><span>{service.title}</span></label>)}<label><input type="radio" name="soort" value="anders" checked/><span>Anders / nog aan het oriënteren</span></label></div></fieldset>
+        <p class="project-reference" id="project-reference" hidden></p>
+        <div class="form-grid">
+          <div class="field"><label for="naam">Uw naam <span>*</span></label><input id="naam" name="naam" autocomplete="name" required maxlength="100" aria-describedby="naam-error"/><p class="field-error" id="naam-error"></p></div>
+          <div class="field"><label for="plaats">Plaats van het project <span>*</span></label><input id="plaats" name="plaats" autocomplete="address-level2" required maxlength="120" aria-describedby="plaats-error"/><p class="field-error" id="plaats-error"></p></div>
+        </div>
+        <div class="field"><label for="bericht">Wat wilt u laten maken? <span>*</span></label><textarea id="bericht" name="bericht" rows="5" required maxlength="3000" placeholder="Vertel over uw idee, de huidige situatie en uw wensen…" aria-describedby="bericht-error"></textarea><p class="field-error" id="bericht-error"></p></div>
+        <div class="field"><label for="periode">Gewenste periode <span class="optional">optioneel</span></label><input id="periode" name="periode" type="text" maxlength="100" placeholder="Bijvoorbeeld: komend voorjaar, of nog flexibel"/><p class="field-help">Een wens, geen reservering. De planning bespreekt u samen.</p></div>
+        <div class="field"><label for="email">E-mailadres <span class="optional">optioneel</span></label><input id="email" name="email" type="email" autocomplete="email" maxlength="200" aria-describedby="email-error"/><p class="field-error" id="email-error"></p></div>
+        <div class="field"><label for="telefoon">Telefoonnummer <span class="optional">optioneel</span></label><input id="telefoon" name="telefoon" type="tel" autocomplete="tel" maxlength="30"/></div>
+        <button class="button" type="submit" disabled>Maak mijn bericht klaar <span aria-hidden="true">↗</span></button>
+        <p class="form-note">Alleen velden met * zijn verplicht. Uw invoer wordt niet op deze website opgeslagen.</p>
+        <noscript><p>Gebruik de e-mail- of WhatsApp-link naast het formulier om uw plannen te sturen.</p></noscript>
+      </form>
+      <div id="draft-ready" class="draft-ready" hidden tabindex="-1" aria-labelledby="draft-title">
+        <h3 id="draft-title">Uw bericht staat klaar.</h3>
+        <p>Er is nog niets verstuurd. Kies waar u verdergaat, voeg eventueel foto’s toe en verstuur uw bericht daar.</p>
+        <div class="draft-actions"><a id="send-whatsapp" class="button" target="_blank" rel="noopener noreferrer">Open WhatsApp <span aria-hidden="true">↗</span></a><a id="send-email" class="button outline">Open e-mailprogramma <span aria-hidden="true">↗</span></a><button class="text-button" id="copy-message" type="button">Kopieer bericht</button></div>
+        <p id="copy-status" class="copy-status" role="status"></p>
+        <details open><summary>Bekijk uw bericht</summary><pre id="draft-text"></pre></details>
+        <button class="text-button" id="edit-message" type="button">Pas mijn bericht aan</button>
+      </div>
+    </div>
+  </section>
+  <script>
+    const form = document.querySelector<HTMLFormElement>('#contact-form')!;
+    const textarea = document.querySelector<HTMLTextAreaElement>('#bericht')!;
+    const ready = document.querySelector<HTMLElement>('#draft-ready')!;
+    const submitButton = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+    const errors: Record<string, string> = { naam:'Vul uw naam in.', plaats:'Vul de plaats van uw project in.', email:'Vul een geldig e-mailadres in, of laat dit veld leeg.', bericht:'Vertel kort wat u wilt laten maken.' };
+    const projects: Record<string, {service:string; title:string}> = JSON.parse(form.dataset.projects || '{}');
+    const params = new URLSearchParams(location.search);
+    const project = projects[params.get('project') || ''];
+    const initialService = project?.service || params.get('dienst');
+    const choices = [...form.querySelectorAll<HTMLInputElement>('input[name="soort"]')];
+    const initialChoice = choices.find(choice => choice.value === initialService);
+    if (initialChoice) initialChoice.checked = true;
+    if (project) {
+      const reference = document.querySelector<HTMLElement>('#project-reference')!;
+      reference.textContent = `Geïnspireerd door: ${project.title}`;
+      reference.hidden = false;
+    }
+    let draft = '';
+    const fieldValue = (data:FormData, key:string) => String(data.get(key) || '').trim();
+    const validate = (field:HTMLInputElement | HTMLTextAreaElement) => {
+      const value = field.value.trim();
+      const invalid = field.name === 'email' ? Boolean(value) && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) : !value;
+      field.setAttribute('aria-invalid', String(invalid));
+      document.getElementById(`${field.name}-error`)!.textContent = invalid ? errors[field.name] : '';
+      return !invalid;
+    };
+    textarea.addEventListener('input', () => { textarea.style.height = 'auto'; textarea.style.height = `${textarea.scrollHeight}px`; });
+    form.addEventListener('input', event => {
+      ready.hidden = true;
+      const target = event.target as HTMLInputElement | HTMLTextAreaElement;
+      if (target.name in errors && target.hasAttribute('aria-invalid')) validate(target);
+    });
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      const invalidFields = Object.keys(errors).map(name => form.elements.namedItem(name) as HTMLInputElement | HTMLTextAreaElement).filter(field => !validate(field));
+      if (invalidFields.length) { invalidFields[0].focus(); return; }
+      const data = new FormData(form);
+      const choice = choices.find(input => input.checked);
+      const topic = choice?.nextElementSibling?.textContent || 'Nog aan het oriënteren';
+      const lines = ['Beste Patrick,', '', fieldValue(data,'bericht'), '', `Soort project: ${topic}`, `Plaats van het project: ${fieldValue(data,'plaats')}`];
+      if (fieldValue(data,'periode')) lines.push(`Gewenste periode: ${fieldValue(data,'periode')}`);
+      if (project) lines.push(`Inspiratie: ${project.title}`);
+      lines.push('', 'Met vriendelijke groet,', fieldValue(data,'naam'));
+      if (fieldValue(data,'email')) lines.push(fieldValue(data,'email'));
+      if (fieldValue(data,'telefoon')) lines.push(fieldValue(data,'telefoon'));
+      draft = lines.join('\n');
+      document.querySelector<HTMLAnchorElement>('#send-email')!.href = `mailto:info@heikoopbouw.nl?subject=${encodeURIComponent('Bouwplannen in '+fieldValue(data,'plaats'))}&body=${encodeURIComponent(draft)}`;
+      document.querySelector<HTMLAnchorElement>('#send-whatsapp')!.href = `https://wa.me/31622701596?text=${encodeURIComponent(draft)}`;
+      document.querySelector('#draft-text')!.textContent = draft;
+      document.querySelector('#copy-status')!.textContent = '';
+      ready.hidden = false;
+      ready.focus();
+    });
+    document.querySelector('#copy-message')?.addEventListener('click', async () => {
+      const status = document.querySelector('#copy-status')!;
+      try { await navigator.clipboard.writeText(draft); status.textContent = 'Bericht gekopieerd. U kunt het nu plakken in uw bericht.'; }
+      catch { status.textContent = 'Kopiëren is niet gelukt. Selecteer de tekst hieronder om deze zelf te kopiëren.'; ready.querySelector('details')!.open = true; }
+    });
+    document.querySelector('#edit-message')?.addEventListener('click', () => { ready.hidden = true; textarea.focus(); });
+    submitButton.disabled = false;
+  </script>
+</Layout>

@@ -1,0 +1,9 @@
+---
+const questions = [
+  ['Wat kost mijn project?', 'De kosten hangen af van de omvang, de bestaande situatie, materiaalkeuzes en afwerking. Beschrijf uw plannen en stuur waar mogelijk foto’s en globale afmetingen mee. Zo heeft het gesprek over uitvoering en kosten een concreet vertrekpunt.'],
+  ['Moet ik al een uitgewerkt plan hebben?', 'Een eerste idee is voldoende om contact op te nemen. Vertel wat u wilt veranderen en in welke plaats. Foto’s, afmetingen of een schets helpen om uw vraag duidelijk te maken. Bestanden kunt u toevoegen in WhatsApp of uw e-mailprogramma.'],
+  ['Werkt Heikoop Bouw ook in mijn woonplaats?', 'Heikoop Bouw is gevestigd in De Meern. Vermeld bij uw aanvraag waar het project is en wat u wilt laten uitvoeren. Bespreek vervolgens of uw plannen en locatie passen.'],
+  ['Hoe neem ik contact op met Patrick?', 'Stuur een WhatsApp-bericht of sms naar 06 2270 1596, of mail naar info@heikoopbouw.nl. Het formulier op deze website helpt uw bericht voor te bereiden; u verstuurt het daarna zelf via WhatsApp of uw e-mailprogramma.']
+];
+---
+<section class="section container faq-section common-questions" id="vragen" aria-labelledby="common-questions-title"><div><p class="eyebrow">ALVAST HANDIG OM TE WETEN</p><h2 id="common-questions-title">Een vraag voordat<br/>u begint?</h2><p class="faq-intro">Deze antwoorden helpen u op weg. Uw eigen plannen bespreken kan natuurlijk ook.</p><a class="text-link" href="/contact/">Stel uw vraag <span aria-hidden="true">↗</span></a></div><div class="faq-list">{questions.map(([question, answer]) => <details><summary>{question}<span aria-hidden="true">+</span></summary><p>{answer}</p></details>)}</div></section>

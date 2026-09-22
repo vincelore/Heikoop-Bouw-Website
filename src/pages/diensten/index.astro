@@ -1,0 +1,10 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ContactBand from '../../components/ContactBand.astro';
+import { services } from '../../data/content';
+---
+<Layout title="Diensten — verbouw, dakkapellen & timmerwerk | Heikoop Bouw" description="Ontdek bouw- en timmerwerk van Heikoop Bouw: verbouw, dakkapellen, veranda’s en maatwerk. Bekijk passende projecten en bespreek uw idee.">
+  <div class="container page-intro"><p class="eyebrow">ONZE DIENSTEN</p><h1>Goed werk begint<br/>bij uw wensen.</h1><p>Meer ruimte in huis. Meer plezier van uw tuin. Of een detail dat precies moet passen. Ontdek wat Heikoop Bouw voor u kan betekenen.</p></div>
+  <section class="container service-list" aria-label="Alle diensten">{services.map(service => <article class="service-row"><a class="service-row-image" href={`/diensten/${service.slug}/`}><img src={`/assets/${service.image}`} alt={service.alt} width="960" height="720" loading="lazy"/></a><div class="service-row-copy"><p class="eyebrow">{service.short}</p><h2>{service.title}</h2><p>{service.intro}</p><a class="text-link" href={`/diensten/${service.slug}/`}>Ontdek de mogelijkheden <span aria-hidden="true">↗</span></a></div></article>)}</section>
+  <ContactBand/>
+</Layout>

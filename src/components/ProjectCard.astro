@@ -1,0 +1,4 @@
+---
+const { project } = Astro.props;
+---
+<a class="project-card" href={`/projecten/${project.slug}/`} data-category={project.category}><div class="project-photo"><img src={`/assets/${project.image}`} alt={project.alt} width="960" height="720" loading="lazy"/><span class="project-open" aria-hidden="true">↗</span></div><div class="project-label">{project.label}</div><h3>{project.title}</h3></a>

@@ -1,0 +1,56 @@
+---
+const { title, images, alt } = Astro.props as { title: string; images: string[]; alt: string };
+---
+<dialog class="photo-viewer" aria-labelledby="photo-viewer-title" data-photos={JSON.stringify(images)} data-alt={alt}>
+  <div class="photo-viewer-shell">
+    <header class="photo-viewer-header"><div><span>GEMAAKT DOOR HEIKOOP</span><h2 id="photo-viewer-title">{title}</h2></div><button class="photo-close" type="button" autofocus aria-label="Foto sluiten"><span aria-hidden="true">×</span><span>Sluiten</span></button></header>
+    <div class="photo-viewer-stage" aria-busy="false"><img class="photo-viewer-image" alt=""/><p class="photo-error" role="status" hidden>Deze foto kan niet worden geladen. Sluit de fotoweergave en probeer opnieuw.</p></div>
+    <div class="photo-viewer-controls"><button type="button" class="photo-previous" aria-label="Vorige foto" hidden={images.length < 2}>←</button><p class="photo-counter" role="status" aria-live="polite"></p><button type="button" class="photo-next" aria-label="Volgende foto" hidden={images.length < 2}>→</button></div>
+  </div>
+</dialog>
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('.photo-viewer');
+  if (dialog && typeof dialog.showModal === 'function') {
+    const photos: string[] = JSON.parse(dialog.dataset.photos || '[]');
+    const image = dialog.querySelector<HTMLImageElement>('.photo-viewer-image')!;
+    const stage = dialog.querySelector<HTMLElement>('.photo-viewer-stage')!;
+    const error = dialog.querySelector<HTMLElement>('.photo-error')!;
+    const counter = dialog.querySelector<HTMLElement>('.photo-counter')!;
+    const close = dialog.querySelector<HTMLButtonElement>('.photo-close')!;
+    let active = 0;
+    let opener: HTMLAnchorElement | null = null;
+    const showPhoto = (index: number) => {
+      active = (index + photos.length) % photos.length;
+      error.hidden = true;
+      image.hidden = false;
+      stage.setAttribute('aria-busy', 'true');
+      image.alt = `${dialog.dataset.alt}, foto ${active + 1} van ${photos.length}`;
+      counter.textContent = `Foto ${active + 1} van ${photos.length}`;
+      image.src = `/assets/${photos[active]}`;
+    };
+    image.addEventListener('load', () => stage.setAttribute('aria-busy', 'false'));
+    image.addEventListener('error', () => { image.hidden = true; error.hidden = false; stage.setAttribute('aria-busy', 'false'); });
+    document.querySelectorAll<HTMLAnchorElement>('[data-photo-index]').forEach(link => {
+      link.addEventListener('click', event => {
+        if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        opener = link;
+        showPhoto(Number(link.dataset.photoIndex));
+        dialog.showModal();
+        document.documentElement.classList.add('photo-viewer-open');
+        close.focus();
+      });
+    });
+    close.addEventListener('click', () => dialog.close());
+    dialog.querySelector('.photo-previous')?.addEventListener('click', () => showPhoto(active - 1));
+    dialog.querySelector('.photo-next')?.addEventListener('click', () => showPhoto(active + 1));
+    dialog.addEventListener('keydown', event => {
+      if (event.key === 'Escape') { event.stopPropagation(); return; }
+      if (photos.length < 2) return;
+      if (event.key === 'ArrowRight') { event.preventDefault(); showPhoto(active + 1); }
+      if (event.key === 'ArrowLeft') { event.preventDefault(); showPhoto(active - 1); }
+    });
+    dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
+    dialog.addEventListener('close', () => { document.documentElement.classList.remove('photo-viewer-open'); opener?.focus({ preventScroll: true }); });
+  }
+</script>
